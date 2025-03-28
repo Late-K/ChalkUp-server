@@ -4,7 +4,7 @@ const cors = require("cors");
 const mysql = require("mysql2/promise");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
@@ -27,7 +27,10 @@ const pool = mysql.createPool({
 pool
   .getConnection()
   .then(() => console.log("Connected to Azure MySQL Database"))
-  .catch((err) => console.error("Database connection error:", err));
+  .catch((err) => {
+    console.error("Database connection error:", err);
+    process.exit(1); // Exit the app if the database connection fails
+  });
 
 // default route
 app.get("/", (req, res) => {
