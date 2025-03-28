@@ -59,6 +59,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ChalkUpBackend'
-          slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_31C6CF96289146C38D932D2F72FBC348 }}
