@@ -4,33 +4,29 @@ const cors = require("cors");
 const mysql = require("mysql2/promise");
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// Create a connection pool
 const pool = mysql.createPool({
-  host: "chalkupbackend-server.mysql.database.azure.com", // Azure MySQL server name
-  user: "tuaebmjcxc", // Admin username
-  password: "zIwtV6rVv6XC6z$F", // Admin password
-  database: "chalkup", // Database name
+  host: "chalkupbackend-server.mysql.database.azure.com",
+  user: "tuaebmjcxc", 
+  password: "zIwtV6rVv6XC6z$F",
+  database: "chalkup", 
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
   ssl: {
-    rejectUnauthorized: true, // Ensure the connection is secure
+    rejectUnauthorized: true, 
   },
 });
 
-// Test the connection
+// test
 pool
   .getConnection()
   .then(() => console.log("Connected to Azure MySQL Database"))
-  .catch((err) => {
-    console.error("Database connection error:", err);
-    process.exit(1); // Exit the app if the database connection fails
-  });
+  .catch((err) => console.error("Database connection error:", err));
 
 // default route
 app.get("/", (req, res) => {
@@ -91,7 +87,7 @@ app.get("/user/:ID", async (req, res) => {
     const [row] = await pool.query("SELECT * FROM users WHERE ID = ?", [
       userId,
     ]);
-    res.json(row[0]); // Return the first row
+    res.json(row[0]);
   } catch (err) {
     console.error("Query error:", err);
     res.status(500).send("Database error");
@@ -189,12 +185,4 @@ app.get("/climbs/average/:UserID", (req, res) => {
     }
     res.json(rows);
   });
-});
-
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err);
-});
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection:", reason);
 });
