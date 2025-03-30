@@ -107,7 +107,7 @@ app.post("/climbs", async (req, res) => {
     const [result] = await pool.query(query, params);
     res
       .status(201)
-      .json({ id: result.insertId, timestamp: new Date().toISOString() });
+      .json({ id: result.insertId});
   } catch (err) {
     console.error("Insert error:", err);
     res.status(500).send("Database error");
