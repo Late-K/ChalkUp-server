@@ -145,8 +145,10 @@ app.post("/user", async (req, res) => {
   const params = [googleId, name, email, photo];
 
   try {
-    const [result] = await pool.query(query, params);
-    res.status(201).json({ id: result.insertId });
+    await pool.query(query, params);
+    const [rows] = await pool.query("SELECT ID FROM users WHERE GoogleID = ?", [googleId]);
+    const userId = rows[0]?.ID;
+    res.status(201).json({ id: userId });
   } catch (err) {
     console.error("Insert error:", err);
     res.status(500).send("Database error");
