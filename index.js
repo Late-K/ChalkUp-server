@@ -165,25 +165,3 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`);
 });
-
-// get average difficulty by month
-app.get("/climbs/average/:UserID", async (req, res) => {
-  const UserId = req.params.UserID;
-
-  const query = `
-    SELECT 
-      strftime('%Y-%m', UploadDateTime) AS month, 
-      AVG (Difficulty) AS average
-    FROM climbs
-    WHERE UserID = ?
-    GROUP BY month
-  `;
-
-  try {
-    const [rows] = await pool.query(query, [UserId]);
-    res.json(rows);
-  } catch (err) {
-    console.error("Query error:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
