@@ -4,16 +4,16 @@ const cors = require("cors");
 const mysql = require("mysql2/promise");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.AZURE_MYSQL_PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.AZURE_MYSQL_HOST,
+  user: process.env.AZURE_MYSQL_USER,
+  password: process.env.AZURE_MYSQL_PASSWORD,
+  database: process.env.AZURE_MYSQL_DATABASE,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
