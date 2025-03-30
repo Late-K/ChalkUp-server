@@ -10,15 +10,15 @@ app.use(cors());
 app.use(express.json());
 
 const pool = mysql.createPool({
-  host: "chalkupbackend-server.mysql.database.azure.com",
-  user: "tuaebmjcxc", 
-  password: "zIwtV6rVv6XC6z$F",
-  database: "chalkup", 
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
   ssl: {
-    rejectUnauthorized: true, 
+    rejectUnauthorized: true,
   },
 });
 
@@ -105,9 +105,7 @@ app.post("/climbs", async (req, res) => {
 
   try {
     const [result] = await pool.query(query, params);
-    res
-      .status(201)
-      .json({ id: result.insertId});
+    res.status(201).json({ id: result.insertId });
   } catch (err) {
     console.error("Insert error:", err);
     res.status(500).send("Database error");
@@ -146,7 +144,9 @@ app.post("/user", async (req, res) => {
 
   try {
     await pool.query(query, params);
-    const [rows] = await pool.query("SELECT ID FROM users WHERE GoogleID = ?", [googleId]);
+    const [rows] = await pool.query("SELECT ID FROM users WHERE GoogleID = ?", [
+      googleId,
+    ]);
     const userId = rows[0]?.ID;
     res.status(201).json({ id: userId });
   } catch (err) {
@@ -167,7 +167,7 @@ app.listen(port, () => {
 });
 
 // get average difficulty by month
-app.get("/climbs/average/:UserID", (req, res) => {
+app.get("/climbs/average/:UserID", async (req, res) => {
   const UserId = req.params.UserID;
 
   const query = `
@@ -179,12 +179,11 @@ app.get("/climbs/average/:UserID", (req, res) => {
     GROUP BY month
   `;
 
-  db.all(query, [UserId], (err, rows) => {
-    if (err) {
-      console.error("Query error:", err);
-      res.status(500).send("Database error");
-      return;
-    }
+  try {
+    const [rows] = await pool.query(query, [userId]);
     res.json(rows);
-  });
+  } catch (err) {
+    console.error("Query error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
