@@ -180,7 +180,7 @@ app.get("/climbs/average/:UserID", async (req, res) => {
   `;
 
   try {
-    const [rows] = await pool.query(query, [userId]);
+    const [rows] = await pool.query(query, [UserId]);
     res.json(rows);
   } catch (err) {
     console.error("Query error:", err);
