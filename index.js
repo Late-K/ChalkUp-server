@@ -172,8 +172,8 @@ app.get("/climbs/average/:UserID", async (req, res) => {
 
   const query = `
     SELECT 
-      strftime('%Y-%m', UploadDateTime) AS month, 
-      AVG (Difficulty) AS average
+      DATE_FORMAT(UploadDateTime, '%Y-%m') AS month, 
+      AVG(Difficulty) AS average
     FROM climbs
     WHERE UserID = ?
     GROUP BY month
