@@ -4,16 +4,16 @@ const cors = require("cors");
 const mysql = require("mysql2/promise");
 
 const app = express();
-const port = process.env.AZURE_MYSQL_PORT || 5000;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
 const pool = mysql.createPool({
-  host: process.env.AZURE_MYSQL_HOST,
-  user: process.env.AZURE_MYSQL_USER,
-  password: process.env.AZURE_MYSQL_PASSWORD,
-  database: process.env.AZURE_MYSQL_DATABASE,
+  host: "chalkupbackend-server.mysql.database.azure.com",
+  user: "tuaebmjcxc",
+  password: "zIwtV6rVv6XC6z$F",
+  database: "chalkup",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -164,4 +164,26 @@ app.use((err, req, res, next) => {
 // start the server
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`);
+});
+
+// get average difficulty by month
+app.get("/climbs/average/:UserID", async (req, res) => {
+  const UserId = req.params.UserID;
+
+  const query = `
+    SELECT 
+      strftime('%Y-%m', UploadDateTime) AS month, 
+      AVG (Difficulty) AS average
+    FROM climbs
+    WHERE UserID = ?
+    GROUP BY month
+  `;
+
+  try {
+    const [rows] = await pool.query(query, [userId]);
+    res.json(rows);
+  } catch (err) {
+    console.error("Query error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
